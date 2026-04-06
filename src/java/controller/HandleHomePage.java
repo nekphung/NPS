@@ -45,6 +45,9 @@ public class HandleHomePage extends HttpServlet {
         
         // Lấy từ khóa tìm kiếm (nếu có)
         String keyword = request.getParameter("keyword");
+        if (keyword != null) {
+            keyword = keyword.toLowerCase().trim();
+        }
         String sort = request.getParameter("sort");
         
         int page = 1;
