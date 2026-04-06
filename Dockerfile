@@ -1,2 +1,2 @@
 FROM tomcat:10
-COPY NPS.war /usr/local/tomcat/webapps/ROOT.war
+COPY Web_b_n_h_ng.war /usr/local/tomcat/webapps/ROOT.war
