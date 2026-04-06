@@ -21,16 +21,17 @@ public class ProductDAO {
         try {
             ArrayList<Product> products = new ArrayList<>();
             StringBuilder sql = new StringBuilder(
-                "Select P.*, group_concat(I.url_path) as images " + 
-                "from products P " +
-                "Left join product_images I on P.id = I.product_id "
+                "SELECT P.id, P.product_name, P.description, P.category_id, P.unit_price, P.units_in_stock, P.date_added, " + 
+                "string_agg(I.url_path, ',') as images " + 
+                "FROM products P " +
+                "LEFT JOIN product_images I ON P.id = I.product_id "
             );
             // where 
             if (keyword != null && !keyword.trim().isEmpty()) {
                 sql.append("where P.product_name LIKE ? OR P.description LIKE ? ");   
             }
             
-            sql.append("group by P.id ");
+            sql.append("GROUP BY P.id, P.product_name, P.description, P.category_id, P.unit_price, P.units_in_stock, P.date_added ");
             
             // sort 
             if (sort != null) {
@@ -48,7 +49,7 @@ public class ProductDAO {
                         sql.append("order by P.product_name DESC ");
                         break;
                     case "newest":
-                        sql.append("order by P.DateAdded DESC ");
+                        sql.append("ORDER BY P.date_added DESC ");
                         break;  
                     case "default":
                     default:
@@ -96,12 +97,14 @@ public class ProductDAO {
     
     public static Product getProductDetail(int id) {
         try {
-            String query = "select P.*, group_concat(I.url_path) as images\n"
-                    + "from products as P\n"
-                    + "join product_images as I\n"
-                    + "on P.id = I.product_id\n"
-                    + "where P.id = ? \n"
-                    + "group by P.id";
+            String query = "SELECT P.id, P.product_name, P.description, P.category_id, P.unit_price, P.units_in_stock, P.date_added, "
+            + "string_agg(I.url_path, ',') as images\n"
+            + "FROM products as P\n"
+            + "JOIN product_images as I\n"
+            + "ON P.id = I.product_id\n"
+            + "WHERE P.id = ? \n"
+            + "GROUP BY P.id, P.product_name, P.description, P.category_id, P.unit_price, P.units_in_stock, P.date_added";
+            
             System.out.println("query: " + query);
             Connection connection = DBConnection.getConnection();
             PreparedStatement statement = connection.prepareStatement(query);
@@ -119,7 +122,7 @@ public class ProductDAO {
                         listImages.add(img);
                     }
                 }
-                product = new Product(resultSet.getInt("id"), resultSet.getString("product_name"), resultSet.getString("description"), category, resultSet.getDouble("unit_price"), resultSet.getInt("units_in_stock"), listImages, resultSet.getString("DateAdded"));
+                product = new Product(resultSet.getInt("id"), resultSet.getString("product_name"), resultSet.getString("description"), category, resultSet.getDouble("unit_price"), resultSet.getInt("units_in_stock"), listImages, resultSet.getString("date_added"));
             }
             return product;
         } catch(Exception e) {
@@ -130,12 +133,13 @@ public class ProductDAO {
     
     public static ArrayList<Product> getProductsPaging(int page, int pageSize) {
         try {
-            String query = "select P.*, group_concat(I.url_path) as images\n"
-                    + "from products as P\n"
-                    + "left join product_images as I\n"
-                    + "on P.id = I.product_id\n"
-                    + "group by P.id\n"
-                    + "limit ? offset ?";
+            String query = "SELECT P.id, P.product_name, P.description, P.category_id, P.unit_price, P.units_in_stock, P.date_added, "
+            + "string_agg(I.url_path, ',') as images\n"
+            + "FROM products as P\n"
+            + "LEFT JOIN product_images as I\n"
+            + "ON P.id = I.product_id\n"
+            + "GROUP BY P.id, P.product_name, P.description, P.category_id, P.unit_price, P.units_in_stock, P.date_added\n"
+            + "LIMIT ? OFFSET ?";
             
             System.out.println("query: " + query);
             Connection connection = DBConnection.getConnection();
@@ -170,12 +174,14 @@ public class ProductDAO {
     
     public static ArrayList<Product> searchProducts(String keyword) {
         ArrayList<Product> list = new ArrayList<>();
-        String sql = "SELECT P.*,  group_concat(PI.url_path) as images\n" +
-                     "FROM products as P\n" +
-                     "join product_images as PI \n" +
-                     "on P.id = PI.product_id \n" +
-                     "where P.product_name LIKE ? OR description LIKE ?\n" +
-                     "group by P.id ";
+        String sql = "SELECT P.id, P.product_name, P.description, P.category_id, P.unit_price, P.units_in_stock, P.date_added, " +
+             "string_agg(PI.url_path, ',') as images\n" +
+             "FROM products as P\n" +
+             "JOIN product_images as PI \n" +
+             "ON P.id = PI.product_id \n" +
+             "WHERE P.product_name ILIKE ? OR P.description ILIKE ?\n" +
+             "GROUP BY P.id, P.product_name, P.description, P.category_id, P.unit_price, P.units_in_stock, P.date_added";
+        
         try (Connection conn = DBConnection.getConnection();
             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + keyword + "%");

@@ -51,7 +51,8 @@ public class UserDAO {
             statement.setString(3, password);
             statement.setString(4, firstName);
             statement.setString(5, lastName);
-            statement.setString(6, dateOfBirth);
+            // Ép kiểu Date cho PostgreSQL
+            statement.setObject(6, dateOfBirth, java.sql.Types.DATE);
 
             int rows = statement.executeUpdate();
 
