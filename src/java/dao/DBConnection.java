@@ -17,9 +17,11 @@ public class DBConnection {
 //    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/qlbanhang";
 //    private static final String JDBC_USER = "root";
 //    private static final String JDBC_PASSWORD = "NekPhung7122006";
-      // 1. Thay URL (Dùng External Database URL từ Render)
-      private static final String JDBC_URL = "jdbc:postgresql://dpg-d79teipr0fns73ep0l90-a.oregon-postgres.render.com:5432/nps_1xj5?sslmode=require";
-
+      // 1. Thay URL (Dùng External Database URL từ Render) (chạy local) 
+      // private static final String JDBC_URL = "jdbc:postgresql://dpg-d79teipr0fns73ep0l90-a.oregon-postgres.render.com:5432/nps_1xj5?sslmode=require";
+      
+      // chạy trên render (internet) 
+      private static final String JDBC_URL = "jdbc:postgresql://nps_1xj5_user:15JddfuDQR875Ww4UcieIXYojrFa7Fj8@dpg-d79teipr0fns73ep0l90-a/nps_1xj5";
       // 2. Thay User và Password
       private static final String JDBC_USER = "nps_1xj5_user";
       private static final String JDBC_PASSWORD = "15JddfuDQR875Ww4UcieIXYojrFa7Fj8";
